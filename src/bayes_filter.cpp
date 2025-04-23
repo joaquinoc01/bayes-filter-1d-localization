@@ -5,11 +5,11 @@
 #include "bayes_filter.hpp"
 
 BayesFilter::BayesFilter(int world_size, float sensor_noise, float motion_noise)
-    : world_size(world_size), sensor_noise(sensor_noise), motion_noise(motion_noise) {
+    : world_size_(world_size), sensor_noise_(sensor_noise), motion_noise_(motion_noise) {
 
-    belief = {0.1, 0.4, 0.2, 0.2, 0.1};  // Non uniform belief at the start
+    belief_ = {0.1, 0.4, 0.2, 0.2, 0.1};  // Non uniform belief at the start
 
-    world = {"door", "wall", "wall", "door", "wall"}; // Initialize world objects
+    world_ = {"door", "wall", "wall", "door", "wall"}; // Initialize world objects
 }
 
 void BayesFilter::normalizeBelief(std::vector<float>& vec){
@@ -23,7 +23,7 @@ void BayesFilter::normalizeBelief(std::vector<float>& vec){
 void BayesFilter::printBelief() const
 {
     std::cout << "Current belief: ";
-    for (float b:belief)
+    for (float b:belief_)
     {
         std::cout << b << " ";
     }
@@ -33,42 +33,42 @@ void BayesFilter::printBelief() const
 void BayesFilter::updateBeliefWithMotion()
 {
     // Probabilities
-    float p_left{motion_noise/2};
-    float p_stay{motion_noise/2};
-    float p_right{1 - motion_noise};
+    float p_left{motion_noise_/2};
+    float p_stay{motion_noise_/2};
+    float p_right{1 - motion_noise_};
 
     // Auxiliar vector
-    std::vector<float> new_belief(world_size, 0.0f);
+    std::vector<float> new_belief(world_size_, 0.0f);
 
-    for (int i = 0; i<world_size; i++)
+    for (int i = 0; i<world_size_; i++)
     {
         // new_belief[i] = P(move_left) * belief[i-1] + P(stay) * belief[i] + P(move_right) * belief[i+1]
         // Assuming a cyclic world, we wrap at the end and at the beginning to use probabilities from the other ends
-        new_belief[i] = p_left * belief[(i - 1 + world_size) % world_size] + p_stay * belief[i] + p_right * belief[(i + 1) % world_size];
+        new_belief[i] = p_left * belief_[(i - 1 + world_size_) % world_size_] + p_stay * belief_[i] + p_right * belief_[(i + 1) % world_size_];
     }
 
     normalizeBelief(new_belief);
-    belief = std::move(new_belief);
+    belief_ = std::move(new_belief);
 }
 
 void BayesFilter::updateBeliefWithSensor(const std::string& measurement)
 {
     // Probabilities
-    float p_high{1 - sensor_noise};
-    float p_low{sensor_noise};
+    float p_high{1 - sensor_noise_};
+    float p_low{sensor_noise_};
 
     // Auxiliar vector
-    std::vector<float> new_belief(world_size, 0.0f);
+    std::vector<float> new_belief(world_size_, 0.0f);
 
-    for (int i = 0; i<world_size ; i++)
+    for (int i = 0; i<world_size_ ; i++)
     {
         if(world[i] == measurement)
-            new_belief[i] = belief[i] * p_high;
+            new_belief[i] = belief_[i] * p_high;
         else
-            new_belief[i] = belief[i] * p_low;
+            new_belief[i] = belief_[i] * p_low;
     }
     normalizeBelief(new_belief);
-    belief = std::move(new_belief);
+    belief_ = std::move(new_belief);
 }
 
 int main()

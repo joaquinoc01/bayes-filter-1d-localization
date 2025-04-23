@@ -22,9 +22,9 @@ public:
 
 private:
     // Member variables
-    int world_size; // Size of the world (1D grid)
-    float sensor_noise; // Noise in the sensor readings (for updates)
-    float motion_noise; // Noise in the motion model (for predictions)
-    std::vector<float> belief; // Current belief state (probability distribution)
-    std::vector<std::string> world;
+    int world_size_; // Size of the world (1D grid)
+    float sensor_noise_; // Noise in the sensor readings (for updates)
+    float motion_noise_; // Noise in the motion model (for predictions)
+    std::vector<float> belief_; // Current belief state (probability distribution)
+    std::vector<std::string> world_;
 };

@@ -61,7 +61,7 @@ void BayesFilter::updateBeliefWithSensor(const std::string& measurement)
 
     for (int i = 0; i<world_size_ ; i++)
     {
-        if(world[i] == measurement)
+        if(world_[i] == measurement)
             new_belief[i] = belief_[i] * p_high;
         else
             new_belief[i] = belief_[i] * p_low;
